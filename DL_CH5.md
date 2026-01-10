@@ -7,7 +7,7 @@
   - 파라미터 공유 : 각 레이어에 동일한 필터가 적용 -> 학습할 파라미터 수 감소
   - 평행 이동 불변성 : 객체 위치가 달라져도 동일 특징 감지
 ### 5.2 합성곱 신경망의 주요 구성 요소
-- 합성곱 레이어
+1. 합성곱 레이어
   - 필터(커널) : 가중치 행렬
  ![743E548E-6D76-4350-9438-7C1A68C55967_4_5005_c](https://github.com/user-attachments/assets/1161c026-dd37-4fdb-8f94-5367dca5213b)
 (출처 : https://wiki1.kr/index.php?title=합성곱_신경망&mobileaction=toggle_view_desktop)
@@ -15,7 +15,7 @@
   - 스트라이드 : 필터가 이동하는 간격 n이라고 했을 때 n 픽셀씩 이동
   - 패딩 : 입력 이미지 가장자리에 추가되는 픽셀
   - 출력 특성 맵의 크기 : 출력크기 = (입력크기- 필터크기十2X패딩)/스트라이드十1
-- 활성화 함수와 비선형
+2. 활성화 함수와 비선형
   - ReLU
 
 | 활성화 함수 | 수식 (텍스트) | 특징 | 장점 | 단점 / 주의점 | 목적 |
@@ -37,5 +37,106 @@
 | `nn.Conv2d`    | 특징 추출 | 이미지와 같은 2차원 입력에 여러 개의 커널(필터)을 적용하여 에지, 패턴 등의 특징을 추출 | `in_channels` : 입력 특징 맵 채널 수<br>`out_channels` : 출력 특징 맵 채널 수(필터 개수)<br>`kernel_size` : 커널 크기<br>`stride` : 이동 간격<br>`padding` : 가장자리 패딩 |
 | `nn.MaxPool2d` | 특징 축소 | 특징 맵에서 가장 큰 값만 선택하여 공간 크기를 줄이고 중요한 정보만 유지           | `kernel_size` : 풀링 윈도우 크기<br>`stride` : 이동 간격                                                                                            |
 
+- 배치 정규화 : 미니 배치의 활성화 값을 정규화 하여 학습 속도를 높임
+- 드롭아웃 : `nn.Dropout2d`, `nn .Dropout`
+3. CIFAR-10 분류기
+- CIFAR-10 : 10개의 클래스의 32x32 컬러 이미지 6만장으로 구성된 데이터셋 (train: 5만 test: 1만)
 
+```python
+import torch
+import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+import numpy as np
+
+# ===============================
+# 데이터 전처리 정의
+# ===============================
+
+transform_train = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),      # 랜덤 크롭 (데이터 증강)
+    transforms.RandomHorizontalFlip(),          # 랜덤 수평 뒤집기 (데이터 증강)
+    transforms.ToTensor(),                      # PIL 이미지 → Tensor
+    transforms.Normalize(
+        (0.4914, 0.4822, 0.4465),               # 평균 (RGB)
+        (0.2470, 0.2435, 0.2616)                # 표준편차 (RGB)
+    )
+])
+
+transform_test = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(
+        (0.4914, 0.4822, 0.4465),
+        (0.2470, 0.2435, 0.2616)
+    )
+])
+
+# ===============================
+# 데이터셋 불러오기
+# ===============================
+
+print("CIFAR-10 데이터셋 로드 중...")
+
+try:
+    train_dataset = torchvision.datasets.CIFAR10(
+        root="./data",
+        train=True,
+        download=True,
+        transform=transform_train
+    )
+
+    test_dataset = torchvision.datasets.CIFAR10(
+        root="./data",
+        train=False,
+        download=True,
+        transform=transform_test
+    )
+
+    # ===============================
+    # 데이터로더 생성
+    # ===============================
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=128,
+        shuffle=True,
+        num_workers=0
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset,
+        batch_size=100,
+        shuffle=False,
+        num_workers=0
+    )
+
+    print("CIFAR-10 데이터셋 로드 완료")
+    print(f"훈련 데이터: {len(train_dataset)}개")
+    print(f"테스트 데이터: {len(test_dataset)}개")
+
+except Exception as e:
+    print(f"데이터셋 로드 중 오류 발생: {e}")
+    print("인터넷 연결 또는 데이터셋 경로를 확인하세요.")
+
+# ===============================
+# 클래스 이름
+# ===============================
+
+classes = (
+    'plane', 'car', 'bird', 'cat', 'deer',
+    'dog', 'frog', 'horse', 'ship', 'truck'
+)
+
+# ===============================
+# 이미지 시각화 함수
+# ===============================
+
+def imshow(img):
+    img = img / 2 + 0.5              # 정규화 해제
+    npimg = img.numpy()
+    plt.figure(figsize=(10, 4))
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.axis('off')
+    plt.show()`
+```
 
