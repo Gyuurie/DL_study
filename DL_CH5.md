@@ -139,4 +139,20 @@ def imshow(img):
     plt.axis('off')
     plt.show()`
 ```
+`RandomCrop` + `HorizontalFlip` : 이미지를 무작위로 자르고 좌우 반전 -> 데이터 증강 효과 -> 학습 데이터 수 증가
 
+```python
+# 더 다양한 데이터 증강 기법 적용
+transform_train_augmented = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),          # 랜덤 크롭
+    transforms.RandomHorizontalFlip(),              # 랜덤 수평 뒤집기
+    transforms.RandomRotation(15),                  # 랜덤 회전 (±15도)
+    transforms.ColorJitter(
+        brightness=0.2,
+        contrast=0.2,
+        saturation=0.2
+    ),                                              # 색상 변화
+    transforms.ToTensor(),                          # Tensor 변환
+    transforms.Normalize(
+        (0.4914, 0.4822
+```
