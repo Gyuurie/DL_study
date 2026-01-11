@@ -238,8 +238,11 @@ for name, module in model.named_modules():
   - "모델이 특정 클래스를 판단할 때 이미지의 어디를 봤는지”를 히트맵으로 보여주는 방법
   - 전역 평균 풀링(GAP)을 사용하는 네트워크에서만 사용 가능 -> CAM은 “클래스 점수 = 각 특징맵의 선형 결합” 구조여야 하는데, GAP가 있어야 그 구조가 성립하기 때문
   - GAP은 특징맵 전체를 평균애서 채널당 숫자 1개로 줄이는 연산
-  <img width="536" height="219" alt="스크린샷 2026-01-11 오후 11 38 27" src="https://github.com/user-attachments/assets/056e6b22-9c30-4c35-8b96-68f8a388b6b1" />
+  
+<img width="536" height="219" alt="스크린샷 2026-01-11 오후 11 38 27" src="https://github.com/user-attachments/assets/056e6b22-9c30-4c35-8b96-68f8a388b6b1" />
+
 - Grad-CAM
   - CAM의 일반화 버전으로 네트워크 아키텍처에 상관 없이 적용 가능
   - 출력 클래스에 대한 기울기를 사용해서 중요 영역을 계산
-  <img width="534" height="212" alt="스크린샷 2026-01-11 오후 11 40 20" src="https://github.com/user-attachments/assets/fe7fe379-bb61-498a-98de-a022ab912e62" />
+  
+<img width="534" height="212" alt="스크린샷 2026-01-11 오후 11 40 20" src="https://github.com/user-attachments/assets/fe7fe379-bb61-498a-98de-a022ab912e62" />
