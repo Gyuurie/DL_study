@@ -230,6 +230,7 @@ for name, module in model.named_modules():
 ### 5.6 합성곱 신경망의 시각화와 해석
 - 합성곱 신경망의 중간층(Conv, ReLU, Pool 등에서 나오는 feature map) 활성화를 시각화 -> 모델이 학습하는 특징을 이해할 수 있음
 <img width="593" height="390" alt="스크린샷 2026-01-11 오후 11 34 52" src="https://github.com/user-attachments/assets/9a6d0015-13c5-4756-b763-dfbe09129925" />
+
 -> conv1에서 3으로 갈 수록 점점 더 고수준의 학습 특징이 포착됨
 - 필터 패턴 분석 : 필터(가중치)를 시각화하면 각 필터가 어떤 패턴을 감지하도록 학습되었는지 알 수 있음
 1. 모델 해석 기법
