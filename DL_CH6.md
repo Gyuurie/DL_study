@@ -150,3 +150,35 @@ def generate_time_series(n_samples=1000, anomaly_positions=[200, 400, 600, 800])
 | 순전파 | 모델 출력 계산, 손실(loss) 측정                          |
 | 역전파 | 손실 기준 gradient 계산, optimizer.step()로 파라미터 업데이트 |
 | 반복  | 배치 단위로 계속 수행, epoch마다 전체 데이터 학습                |
+
+### 총 정리
+1. RNN의 기본 개념
+순차적 데이터(시계열, 텍스트 등)를 처리하기 위한 신경망 구조
+은닉 상태(hidden state)를 통해 과거 정보를 기억
+단점: 장기 의존성 문제, 기울기 소실/폭발 문제
+2. LSTM과 GRU
+LSTM (Long Short-Term Memory)
+셀 상태(cell state)와 3개의 게이트(망각, 입력, 출력)로 정보 흐름 조절
+장기 의존성 문제 완화
+GRU (Gated Recurrent Unit)
+더 단순한 구조
+업데이트 게이트와 리셋 게이트만 사용
+3. 양방향 RNN
+과거와 미래 정보를 동시에 활용
+더 풍부한 문맥 정보 제공
+텍스트 처리, 감성 분석 등에서 효과적
+4. PyTorch 지원 기능
+RNN, LSTM, GRU 모듈 제공
+가변 길이 시퀀스 처리 지원(패딩, 패킹)
+5. 활용 분야
+시계열 예측
+감성 분석
+이상치 탐지 등 다양한 시퀀스 문제
+6. 성능 최적화 기법
+하이퍼파라미터 튜닝(hidden size, learning rate 등)
+그래디언트 클리핑(gradient explosion 방지)
+학습률 스케줄링 / 조기 중단(학습 안정화)
+Attention 메커니즘: 모델이 중요한 부분에 집중
+7. 핵심 요약
+RNN 계열 모델은 시간적 의존성을 가진 데이터를 처리하는 강력한 도구
+적절한 아키텍처(LSTM, GRU, Bi-RNN)와 최적화 기법을 결합하면 다양한 시퀀스 문제를 효과적으로 해결 가능
