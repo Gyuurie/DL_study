@@ -132,3 +132,11 @@ def generate_time_series(n_samples=1000, anomaly_positions=[200, 400, 600, 800])
 
     return series
 ```
+- Gaussian 노이즈 추가 -> 정규분포를 따르는 무작위 값을 추가하여 현실 세계와 비슷해짐
+- 시계열이 점점 증가하는 선형 트렌드 추가
+- anomaly_positions에 지정된 위치에 갑작스러운 스파이크 또는 드롭 추가
+
+3. 입력 시퀀스와 재구성 시퀀스 차이 최소화
+- 인코더 → 시퀀스 압축(latent vector)
+- 디코더 → 압축된 벡터로 시퀀스 재구성
+- Linear layer → feature 차원 복원
