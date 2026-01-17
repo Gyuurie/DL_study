@@ -69,3 +69,66 @@ $$
 - 주가의 전반적인 방향성은 예측할 수 있지만 급격한 변화는 예측이 어려움
 - LSTM 모델의 시계열 예측 결과 성능을 분석하면 패턴 학습 능력이 향상되고 오차 변동성이 줄어들게 됨
 ### 6.5 자연어 처리 응용
+1. 컴퓨터가 처리할 수 있도록 텍스트를 토큰화 해야함 -> 텍스트를 인덱스로 변환
+2. 문장마다 길이가 다르기 때문에, 여러 문장을 한 번에 모델에 넣기 위해 길이를 맞추는 패딩과 묶어서 처리하는 방식(배치)을 사용
+3. 어텐션 메커니즘의 사용 : 모든 단어를 똑같이 보지 않고, 의미를 결정하는 단어에 더 큰 가중치를 두고 판단할 수 있어서 감정 분류 성능이 좋아짐
+4. 임베딩 : 이산적인 객체(단어, 토큰)를 의미 정보를 보존한 채 연속적인 실수 벡터로 변환하는 함수 -> 감성분석에서 비슷한 감정을 가진 단어를 비슷하게 표현하기 위해서 사용
+5. 양방향 LSTM
+
+```
+python
+self.lstm = nn.LSTM(
+            input_size=embed_dim,
+            hidden_size=hidden_dim,
+            num_layers=n_layers,
+            batch_first=True,
+            bidirectional=True,
+            dropout=dropout if n_layers > 1 else 0
+        )
+```
+6. 코드 리뷰
+- 시퀀스 전체 정보 반영: BiLSTM이 양방향 정보를 모두 제공 → 문맥을 더 잘 반영
+- 중요 단어 강조: Attention이 중요한 단어/토큰에 높은 가중치 → 최종 분류 성능 향상
+- 파라미터 효율적: Linear 레이어 하나로 바로 분류 가능, 마지막 hidden만 쓰므로 계산량이 적음
+### 6.6 순환 신경망 하이퍼파라미터 튜닝
+1. 베이지안 최적화 : 함수의 최대값이나 최소값을 찾는 방법
+  - 머신러닝 모델의 정확도를 최대화하고 싶음
+  - 학습률, 배치 크기, 은닉층 크기 같은 하이퍼파라미터 조합이 너무 많음
+  - 모든 조합을 실험하는 것은 비용(시간, 연산) 너무 큼
+  - 베이지안 최적화는 이전 실험 결과를 기반으로 다음에 시도할 값을 똑똑하게 선택
+  - 후보 점 몇 개 선택 - 성능 확인 - 성능 기반으로 함수 형태 추정 - 다음 후보 점 선택 - 반복 - 최적값 발견
+3. 성능 기반 조정 - 모델이 더 이상 학습되지 않을 때 LR을 줄여 최적화 + 과적합 방지
+4. if is_improvement → 성능이 좋아졌으면 best 갱신, patience 초기화
+5. else → 성능이 개선되지 않았으면 patience 증가 → patience 초과 시 LR 감소
+### 6.7 순환 신경망의 실전 활용과 최적화
+1. LSTM 오토인코더 : 시퀀스를 압축(encoding) → 복원(decoding) 하는 신경망
+- 예시 : 영어 -> 프랑스어 번역
+- Encoder: 입력 시퀀스를 압축해 hidden state를 생성 -> ex) 인코더는 영어 문장을 읽고 → 문장 전체 의미를 하나의 벡터(hidden state)로 요약
+- 문장 전체를 읽고 마지막에 한 문장으로 요약한 상태 → 그 벡터가 hidden state
+- Decoder: hidden state를 바탕으로 원래 시퀀스를 재구성 -> 디코더는 인코더의 hidden vector를 받아서 한 단어씩 프랑스어 생성
+- Output Layer: 디코더 출력 후 최종 값 계산
+2. 인공 시계열 데이터 생성 함수
+
+```
+python
+def generate_time_series(n_samples=1000, anomaly_positions=[200, 400, 600, 800]):
+    # 1) 기본 시계열 생성: 사인파 + 노이즈
+    t = np.linspace(0, 10, n_samples)
+    series = 0.8 * np.sin(t) + 0.2 * np.sin(5 * t) + 0.1 * np.random.randn(n_samples)
+
+    # 2) 트렌드 추가 (선형 증가)
+    trend = 0.005 * np.arange(n_samples)
+    series += trend
+
+    # 3) 이상치 추가
+    for pos in anomaly_positions:
+        if pos < n_samples:
+            # 갑작스러운 스파이크 추가
+            series[pos] += 1.5 * np.random.rand() + 0.5
+
+            # 또는 갑작스러운 드롭 추가
+            if np.random.rand() > 0.5 and pos + 1 < n_samples:
+                series[pos + 1] -= 1.2 * np.random.rand() + 0.3
+
+    return series
+```
