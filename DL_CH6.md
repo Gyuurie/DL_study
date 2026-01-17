@@ -142,3 +142,11 @@ def generate_time_series(n_samples=1000, anomaly_positions=[200, 400, 600, 800])
 - Linear layer → feature 차원 복원
 4. 계열 데이터를 LSTM 등에 입력할 수 있도록 윈도우 단위로 나누는 함수
 - `window_size` : LSTM에 입력할 시퀀스 길이 (ex: 10 → 10개씩 묶음)
+- `len(data) - window_size + 1` 만큼 반복 → 끝까지 윈도우를 만들 수 있도록 계산
+5. 모델 학습 + 평가
+
+  | 단계  | 역할                                             |
+| --- | ---------------------------------------------- |
+| 순전파 | 모델 출력 계산, 손실(loss) 측정                          |
+| 역전파 | 손실 기준 gradient 계산, optimizer.step()로 파라미터 업데이트 |
+| 반복  | 배치 단위로 계속 수행, epoch마다 전체 데이터 학습                |
